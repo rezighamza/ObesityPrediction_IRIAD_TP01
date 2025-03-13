@@ -2,7 +2,6 @@
 
 ### Getting Started 
 
-- Clone the repository
 - Compile the code
 - Start the server 
 - Start the client
