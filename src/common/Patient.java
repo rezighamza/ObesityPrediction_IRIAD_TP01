@@ -1,41 +1,51 @@
 package common;
+
 import java.io.Serializable;
-import java.util.List;
 
 public class Patient implements Serializable {
+    private String gender;
     private int age;
-    private double poids;
-    private double taille;
-    private String genre;
-    private List<String> habitudesAlimentaires;
+    private double height;
+    private double weight;
+    private String familyHistory;
+    private String favc;
+    private int fcvc;
+    private int ncp;
+    private String caec;
+    private String smoke;
+    private double ch2o;
+    private String scc;
+    private int faf;
+    private int tue;
+    private String calc;
+    private String mtrans;
+    private String obesityLevel;
 
-    public Patient(int age, double poids, double taille, String genre, List<String> habitudesAlimentaires) {
+    public Patient(String gender, int age, double height, double weight, String familyHistory, String favc, int fcvc, int ncp,
+                   String caec, String smoke, double ch2o, String scc, int faf, int tue, String calc, String mtrans, String obesityLevel) {
+        this.gender = gender;
         this.age = age;
-        this.poids = poids;
-        this.taille = taille;
-        this.genre = genre;
-        this.habitudesAlimentaires = habitudesAlimentaires;
+        this.height = height;
+        this.weight = weight;
+        this.familyHistory = familyHistory;
+        this.favc = favc;
+        this.fcvc = fcvc;
+        this.ncp = ncp;
+        this.caec = caec;
+        this.smoke = smoke;
+        this.ch2o = ch2o;
+        this.scc = scc;
+        this.faf = faf;
+        this.tue = tue;
+        this.calc = calc;
+        this.mtrans = mtrans;
+        this.obesityLevel = obesityLevel;
     }
 
-    public double getIMC() {
-        return poids / (taille * taille);
-    }
-
-    public List<String> getHabitudesAlimentaires() {
-        return habitudesAlimentaires;
-    }
-
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "age=" + age +
-                ", poids=" + poids +
-                ", taille=" + taille +
-                ", genre='" + genre + '\'' +
-                ", habitudesAlimentaires=" + habitudesAlimentaires +
-                '}';
-    }
+    // Getters
+    public String getGender() { return gender; }
     public int getAge() { return age; }
-    public double getPoids() { return poids; }
-    public double getTaille() { return taille; }
+    public double getHeight() { return height; }
+    public double getWeight() { return weight; }
+    public String getObesityLevel() { return obesityLevel; }
 }

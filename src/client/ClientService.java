@@ -1,43 +1,81 @@
 package client;
+
 import common.InterfaceRMI;
 import common.Patient;
-import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.rmi.*;
+import java.io.*;
+import java.util.Scanner;
 
 public class ClientService {
-    private final InterfaceRMI stub;
+
+    private InterfaceRMI stub;
 
     public ClientService(InterfaceRMI stub) {
         this.stub = stub;
     }
 
-    public void envoyerDonneesPatient() {
+    public void ajouterPatientsCSV(String csvPath) {
         try {
-            for(int i = 0; i < 5; i++) {
-                Patient patient = new Patient(20 + i, 80, 1.75, "M", Arrays.asList("FAVC", "FCVC"));
-                stub.envoyerDonneesPatient(patient);
-                Thread.sleep(1000);
+            System.out.println("Envoi des données en cours... (Veuillez patienter)");
+            BufferedReader br = new BufferedReader(new FileReader(csvPath));
+            String line;
+            int count = 0;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(",");
+                if (tokens.length >= 17) {
+                    Patient p = new Patient(
+                            tokens[0],
+                            Integer.parseInt(tokens[1]),
+                            Double.parseDouble(tokens[2]),
+                            Double.parseDouble(tokens[3]),
+                            tokens[4], tokens[5],
+                            Integer.parseInt(tokens[6]),
+                            Integer.parseInt(tokens[7]),
+                            tokens[8], tokens[9],
+                            Double.parseDouble(tokens[10]),
+                            tokens[11],
+                            Integer.parseInt(tokens[12]),
+                            Integer.parseInt(tokens[13]),
+                            tokens[14], tokens[15], tokens[16]
+                    );
+                    stub.envoyerDonneesPatient(p);
+                    count++;
+                }
             }
-        } catch (RemoteException e) {
-            System.err.println("Erreur lors de l'envoi des données: " + e.getMessage());
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            br.close();
+            System.out.println("Envoi terminé. " + count + " patients ajoutés.");
+        } catch (Exception e) {
+            System.out.println("Erreur lors de la lecture du CSV.");
+            e.printStackTrace();
         }
-
     }
 
 
-
-
-    public void predireObesite(Patient p) {
+    public void predirePatient() {
         try {
-            String prediction = stub.predireObesite(p);
-            System.out.println("Résultat de la prédiction: " + prediction);
-        } catch (RemoteException e) {
-            System.err.println("Erreur lors de la prédiction: " + e.getMessage());
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Genre: ");
+            String gender = sc.nextLine();
+            System.out.print("Âge: ");
+            int age = sc.nextInt();
+            System.out.print("Taille: ");
+            double height = sc.nextDouble();
+            System.out.print("Poids: ");
+            double weight = sc.nextDouble();
+            sc.nextLine();
+            Patient p = new Patient(gender, age, height, weight, "", "", 0, 0, "", "", 0.0, "", 0, 0, "", "", "");
+            String result = stub.predireObesite(p);
+            System.out.println("Résultat: " + result);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-
+    public void consulterStatut() {
+        try {
+            String status = stub.getServerStatus();
+            System.out.println(status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
