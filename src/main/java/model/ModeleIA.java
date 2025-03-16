@@ -1,8 +1,8 @@
-package model;
+package main.java.model;
 import java.util.List;
 
 public class ModeleIA {
-    private Object modele; // Placeholder for actual AI model
+    private Object modele; // Placeholder for actual AI main.java.model
 
     public void chargerData(List<Object> data) {
         System.out.println("Chargement des données...");

@@ -1,0 +1,11 @@
+gui/controller/MainController.class
+common/InterfaceRMI.class
+client/ClientService.class
+client/ClientEtablissement.class
+main/java/model/ModeleIA.class
+server/ServeurService.class
+common/Patient.class
+main/java/common/exceptions/PredictionException.class
+main/java/common/exceptions/PatientNotFoundException.class
+server/ServeurObesite.class
+gui/MainApp.class

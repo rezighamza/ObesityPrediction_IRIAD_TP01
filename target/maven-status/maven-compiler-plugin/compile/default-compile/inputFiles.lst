@@ -1,0 +1,12 @@
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/server/ServeurService.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/server/ServeurObesite.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/common/exceptions/PredictionException.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/common/HabitudeAlimentaire.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/gui/MainApp.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/client/ClientService.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/client/ClientEtablissement.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/common/exceptions/PatientNotFoundException.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/common/InterfaceRMI.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/gui/controller/MainController.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/model/ModeleIA.java
+/home/lenovo/code/IRIAD/ObesityPrediction/src/main/java/common/Patient.java

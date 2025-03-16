@@ -1,4 +1,4 @@
-package common.exceptions;
+package main.java.common.exceptions;
 
 public class PatientNotFoundException extends Exception {
     public PatientNotFoundException(String message) {

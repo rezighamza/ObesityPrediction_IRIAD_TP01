@@ -3,6 +3,6 @@ cd "$(dirname "$0")/.." || exit 1
 
 mkdir -p bin
 
-javac -d bin -cp src $(find src -name "*.java")
+mvn clean compile
 
 echo "Compilation terminée."
