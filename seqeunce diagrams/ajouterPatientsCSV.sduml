@@ -1,0 +1,78 @@
+participant "ClientService<meta class="client.ClientService"></meta>" as client.ClientService
+participant "ServeurService (InterfaceRMI)<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "ServeurService<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "ModeleIA<meta class="model.ModeleIA"></meta>" as model.ModeleIA
+participant "Patient<meta class="common.Patient"></meta>" as common.Patient
+participant "DMatrix<meta class="ml.dmlc.xgboost4j.java.DMatrix"></meta>" as ml.dmlc.xgboost4j.java.DMatrix #SteelBlue
+participant "XGBoost<meta class="ml.dmlc.xgboost4j.java.XGBoost"></meta>" as ml.dmlc.xgboost4j.java.XGBoost #SteelBlue
+participant "Booster<meta class="ml.dmlc.xgboost4j.java.Booster"></meta>" as ml.dmlc.xgboost4j.java.Booster #SteelBlue
+
+autoactivation
+autonumber
+messagestyle <wordwrap:50>
+
+loop (line = br.readLine()) != null
+alt line.startsWith("Gender")
+box over client.ClientService: continue<meta ref="client.ClientService:882"></meta>
+end
+alt tokens.length >= 17
+client.ClientService->server.ServeurService:envoyerDonneesPatient(clientID, p)<meta ref="client.ClientService:2433" class="server.ServeurService" method="envoyerDonneesPatient" argTypes="java.lang.String,common.Patient"></meta>
+server.ServeurService->server.ServeurService:addPatient(clientID, patient)<meta ref="server.ServeurService:1722" class="server.ServeurService" method="addPatient" argTypes="java.lang.String,common.Patient"></meta>
+server.ServeurService<--server.ServeurService:"Patient ajouté avec ID: " + key : String<meta ref="server.ServeurService:3184"></meta>
+alt patients.size() >= N && !trainingComplete
+server.ServeurService->server.ServeurService:lancerEntrainement()<meta ref="server.ServeurService:1890" class="server.ServeurService" method="lancerEntrainement" argTypes=""></meta>
+server.ServeurService->model.ModeleIA:trainModele(patients)<meta ref="server.ServeurService:2053" class="model.ModeleIA" method="trainModele" argTypes="java.util.List<common.Patient>"></meta>
+model.ModeleIA->model.ModeleIA:removeOutliers(patients)<meta ref="model.ModeleIA:6503" class="model.ModeleIA" method="removeOutliers" argTypes="java.util.List<common.Patient>"></meta>
+loop for each Patient patient
+model.ModeleIA->common.Patient:getWeight()<meta ref="model.ModeleIA:11119" class="common.Patient" method="getWeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:weight : double<meta ref="common.Patient:1523"></meta>
+model.ModeleIA->common.Patient:getHeight()<meta ref="model.ModeleIA:11150" class="common.Patient" method="getHeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:height : double<meta ref="common.Patient:1461"></meta>
+end
+loop for each Patient patient
+model.ModeleIA->common.Patient:getGender()<meta ref="model.ModeleIA:11958" class="common.Patient" method="getGender" argTypes=""></meta>
+model.ModeleIA<--common.Patient:gender : String<meta ref="common.Patient:1346"></meta>
+model.ModeleIA->common.Patient:getAge()<meta ref="model.ModeleIA:11992" class="common.Patient" method="getAge" argTypes=""></meta>
+model.ModeleIA<--common.Patient:age : int<meta ref="common.Patient:1402"></meta>
+model.ModeleIA->common.Patient:getHeight()<meta ref="model.ModeleIA:12026" class="common.Patient" method="getHeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:height : double<meta ref="common.Patient:1461"></meta>
+model.ModeleIA->common.Patient:getWeight()<meta ref="model.ModeleIA:12063" class="common.Patient" method="getWeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:weight : double<meta ref="common.Patient:1523"></meta>
+end
+model.ModeleIA<--model.ModeleIA:cleanedPatients : List<Patient><meta ref="model.ModeleIA:12111"></meta>
+model.ModeleIA->model.ModeleIA:loadPatientsToDMatrix(trainPatients)<meta ref="model.ModeleIA:7018" class="model.ModeleIA" method="loadPatientsToDMatrix" argTypes="java.util.List<common.Patient>"></meta> => DMatrix c'est un objet de la librairie XGBoost qui permet de stocker les données d'entrainement
+loop i < patients.size()
+model.ModeleIA->model.ModeleIA:processPatientFeatures(patient)<meta ref="model.ModeleIA:5423" class="model.ModeleIA" method="processPatientFeatures" argTypes="common.Patient"></meta>
+model.ModeleIA<--model.ModeleIA:features : float[]<meta ref="model.ModeleIA:4961"></meta>
+end
+model.ModeleIA->ml.dmlc.xgboost4j.java.DMatrix:setLabel(labels)<meta ref="model.ModeleIA:6143" class="ml.dmlc.xgboost4j.java.DMatrix" method="setLabel" argTypes="float[]"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.DMatrix:void
+model.ModeleIA<--model.ModeleIA:dMatrix : DMatrix<meta ref="model.ModeleIA:6185"></meta>
+model.ModeleIA->model.ModeleIA:loadPatientsToDMatrix(validPatients)<meta ref="model.ModeleIA:7090" class="model.ModeleIA" method="loadPatientsToDMatrix" argTypes="java.util.List<common.Patient>"></meta>
+loop i < patients.size()
+model.ModeleIA->model.ModeleIA:processPatientFeatures(patient)<meta ref="model.ModeleIA:5423" class="model.ModeleIA" method="processPatientFeatures" argTypes="common.Patient"></meta>
+model.ModeleIA<--model.ModeleIA:features : float[]<meta ref="model.ModeleIA:4961"></meta>
+end
+model.ModeleIA->ml.dmlc.xgboost4j.java.DMatrix:setLabel(labels)<meta ref="model.ModeleIA:6143" class="ml.dmlc.xgboost4j.java.DMatrix" method="setLabel" argTypes="float[]"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.DMatrix:void
+model.ModeleIA<--model.ModeleIA:dMatrix : DMatrix<meta ref="model.ModeleIA:6185"></meta>
+model.ModeleIA->ml.dmlc.xgboost4j.java.XGBoost:crossValidation(trainMatrix, params, cv_rounds, cv_folds, metrics, null, null)<meta ref="model.ModeleIA:8438" class="ml.dmlc.xgboost4j.java.XGBoost" method="crossValidation" argTypes="ml.dmlc.xgboost4j.java.DMatrix,java.util.Map<java.lang.String,java.lang.Object>,int,int,java.lang.String[],ml.dmlc.xgboost4j.java.IObjective,ml.dmlc.xgboost4j.java.IEvaluation"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.XGBoost:String[]
+model.ModeleIA->ml.dmlc.xgboost4j.java.XGBoost:train(trainMatrix, params, nround, watches, null, null, null, earlyStoppingRounds)<meta ref="model.ModeleIA:9075" class="ml.dmlc.xgboost4j.java.XGBoost" method="train" argTypes="ml.dmlc.xgboost4j.java.DMatrix,java.util.Map<java.lang.String,java.lang.Object>,int,java.util.Map<java.lang.String,ml.dmlc.xgboost4j.java.DMatrix>,float[][],ml.dmlc.xgboost4j.java.IObjective,ml.dmlc.xgboost4j.java.IEvaluation,int"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.XGBoost:Booster
+model.ModeleIA->ml.dmlc.xgboost4j.java.Booster:getFeatureScore("")<meta ref="model.ModeleIA:9257" class="ml.dmlc.xgboost4j.java.Booster" method="getFeatureScore" argTypes="java.lang.String"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.Booster:Map<String, Integer>
+model.ModeleIA->ml.dmlc.xgboost4j.java.Booster:saveModel("src/main/java/resources/model...)<meta ref="model.ModeleIA:10004" class="ml.dmlc.xgboost4j.java.Booster" method="saveModel" argTypes="java.lang.String"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.Booster:void
+model.ModeleIA->model.ModeleIA:evaluateModel(validMatrix)<meta ref="model.ModeleIA:10217" class="model.ModeleIA" method="evaluateModel" argTypes="ml.dmlc.xgboost4j.java.DMatrix"></meta>
+model.ModeleIA->ml.dmlc.xgboost4j.java.Booster:predict(validMatrix)<meta ref="model.ModeleIA:12310" class="ml.dmlc.xgboost4j.java.Booster" method="predict" argTypes="ml.dmlc.xgboost4j.java.DMatrix"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.Booster:float[][]
+model.ModeleIA->ml.dmlc.xgboost4j.java.DMatrix:getLabel()<meta ref="model.ModeleIA:12363" class="ml.dmlc.xgboost4j.java.DMatrix" method="getLabel" argTypes=""></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.DMatrix:float[]
+model.ModeleIA<--model.ModeleIA:void
+server.ServeurService<--model.ModeleIA:void
+server.ServeurService<--server.ServeurService:void
+end
+client.ClientService<--server.ServeurService:void
+end
+end

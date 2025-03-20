@@ -1,0 +1,23 @@
+participant "ClientService<meta class="client.ClientService"></meta>" as client.ClientService
+participant "ServeurService (InterfaceRMI)<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "ServeurService<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "ModeleIA<meta class="model.ModeleIA"></meta>" as model.ModeleIA
+participant "XGBoost<meta class="ml.dmlc.xgboost4j.java.XGBoost"></meta>" as ml.dmlc.xgboost4j.java.XGBoost #SteelBlue
+
+autoactivation
+autonumber
+messagestyle <wordwrap:50>
+
+client.ClientService->server.ServeurService:getServerStatus()<meta ref="client.ClientService:5628" class="server.ServeurService" method="getServerStatus" argTypes=""></meta>
+server.ServeurService->server.ServeurService:checkExistingModel()<meta ref="server.ServeurService:2759" class="server.ServeurService" method="checkExistingModel" argTypes=""></meta>
+alt modelFile.exists()
+server.ServeurService->model.ModeleIA:loadModel(modelPath)<meta ref="server.ServeurService:1225" class="model.ModeleIA" method="loadModel" argTypes="java.lang.String"></meta>
+alt !modelFile.exists()
+server.ServeurService<--model.ModeleIA:false : boolean<meta ref="model.ModeleIA:15644"></meta>
+end
+model.ModeleIA->ml.dmlc.xgboost4j.java.XGBoost:loadModel(modelPath)<meta ref="model.ModeleIA:15686" class="ml.dmlc.xgboost4j.java.XGBoost" method="loadModel" argTypes="java.lang.String"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.XGBoost:Booster
+server.ServeurService<--model.ModeleIA:true : boolean<meta ref="model.ModeleIA:15815"></meta>
+end
+server.ServeurService<--server.ServeurService:void
+client.ClientService<--server.ServeurService:"Nombre de patients: " + patients.size() + ", Modèle entraîné: " + trainingComplete : String<meta ref="server.ServeurService:2796"></meta>

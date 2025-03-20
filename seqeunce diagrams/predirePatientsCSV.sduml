@@ -1,0 +1,84 @@
+participant "ClientService<meta class="client.ClientService"></meta>" as client.ClientService
+participant "ServeurService (InterfaceRMI)<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "ServeurService<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "Patient<meta class="common.Patient"></meta>" as common.Patient
+participant "ModeleIA<meta class="model.ModeleIA"></meta>" as model.ModeleIA
+participant "Booster<meta class="ml.dmlc.xgboost4j.java.Booster"></meta>" as ml.dmlc.xgboost4j.java.Booster #SteelBlue
+
+autoactivation
+autonumber
+messagestyle <wordwrap:50>
+
+loop (line = br.readLine()) != null
+alt line.startsWith("Gender")
+box over client.ClientService: continue<meta ref="client.ClientService:3666"></meta>
+end
+alt tokens.length >= 16
+client.ClientService->server.ServeurService:predireObesite(clientID, p)<meta ref="client.ClientService:4843" class="server.ServeurService" method="predireObesite" argTypes="java.lang.String,common.Patient"></meta>
+alt !trainingComplete
+client.ClientService<--server.ServeurService:"Erreur: Modèle non entraîné. Veuillez réessayer plus tard." : String<meta ref="server.ServeurService:2446"></meta>
+end
+server.ServeurService->common.Patient:getDetails()<meta ref="server.ServeurService:2556" class="common.Patient" method="getDetails" argTypes=""></meta>
+server.ServeurService<--common.Patient:void
+server.ServeurService->server.ServeurService:addPatient(clientID, patient)<meta ref="server.ServeurService:2597" class="server.ServeurService" method="addPatient" argTypes="java.lang.String,common.Patient"></meta>
+server.ServeurService<--server.ServeurService:"Patient ajouté avec ID: " + key : String<meta ref="server.ServeurService:3184"></meta>
+client.ClientService<--server.ServeurService:modeleIA.prédire(patient) : String<meta ref="server.ServeurService:2642"></meta>
+server.ServeurService->model.ModeleIA:prédire(patient)<meta ref="server.ServeurService:2642" class="model.ModeleIA" method="prédire" argTypes="common.Patient"></meta>
+alt model == null
+server.ServeurService<--model.ModeleIA:"Erreur: Modèle non entraîné. Veuillez d'abord entraîner le modèle." : String<meta ref="model.ModeleIA:16197"></meta>
+end
+model.ModeleIA->common.Patient:getHeight()<meta ref="model.ModeleIA:16359" class="common.Patient" method="getHeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:height : double<meta ref="common.Patient:1461"></meta>
+model.ModeleIA->common.Patient:getWeight()<meta ref="model.ModeleIA:16413" class="common.Patient" method="getWeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:weight : double<meta ref="common.Patient:1523"></meta>
+model.ModeleIA->model.ModeleIA:processPatientFeatures(patient)<meta ref="model.ModeleIA:16597" class="model.ModeleIA" method="processPatientFeatures" argTypes="common.Patient"></meta>
+model.ModeleIA->common.Patient:getHeight()<meta ref="model.ModeleIA:2626" class="common.Patient" method="getHeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:height : double<meta ref="common.Patient:1461"></meta>
+model.ModeleIA->common.Patient:getWeight()<meta ref="model.ModeleIA:2676" class="common.Patient" method="getWeight" argTypes=""></meta>
+model.ModeleIA<--common.Patient:weight : double<meta ref="common.Patient:1523"></meta>
+model.ModeleIA->common.Patient:getAge()<meta ref="model.ModeleIA:2851" class="common.Patient" method="getAge" argTypes=""></meta>
+model.ModeleIA<--common.Patient:age : int<meta ref="common.Patient:1402"></meta>
+model.ModeleIA->common.Patient:getGender()<meta ref="model.ModeleIA:2970" class="common.Patient" method="getGender" argTypes=""></meta>
+model.ModeleIA<--common.Patient:gender : String<meta ref="common.Patient:1346"></meta>
+model.ModeleIA->common.Patient:getFaf()<meta ref="model.ModeleIA:3455" class="common.Patient" method="getFaf" argTypes=""></meta>
+model.ModeleIA<--common.Patient:faf : int<meta ref="common.Patient:2127"></meta>
+model.ModeleIA->common.Patient:getTue()<meta ref="model.ModeleIA:3483" class="common.Patient" method="getTue" argTypes=""></meta>
+model.ModeleIA<--common.Patient:tue : int<meta ref="common.Patient:2180"></meta>
+model.ModeleIA->common.Patient:getFcvc()<meta ref="model.ModeleIA:3675" class="common.Patient" method="getFcvc" argTypes=""></meta>
+model.ModeleIA<--common.Patient:fcvc : int<meta ref="common.Patient:1788"></meta>
+model.ModeleIA->common.Patient:getFavc()<meta ref="model.ModeleIA:3727" class="common.Patient" method="getFavc" argTypes=""></meta>
+model.ModeleIA<--common.Patient:favc : String<meta ref="common.Patient:1733"></meta>
+model.ModeleIA->common.Patient:getNcp()<meta ref="model.ModeleIA:3890" class="common.Patient" method="getNcp" argTypes=""></meta>
+model.ModeleIA<--common.Patient:ncp : int<meta ref="common.Patient:1842"></meta>
+model.ModeleIA->common.Patient:getCh2o()<meta ref="model.ModeleIA:4003" class="common.Patient" method="getCh2o" argTypes=""></meta>
+model.ModeleIA<--common.Patient:ch2o : double<meta ref="common.Patient:2017"></meta>
+model.ModeleIA->common.Patient:getFamilyHistory()<meta ref="model.ModeleIA:4145" class="common.Patient" method="getFamilyHistory" argTypes=""></meta>
+model.ModeleIA<--common.Patient:familyHistory : String<meta ref="common.Patient:1666"></meta>
+model.ModeleIA->common.Patient:getSmoke()<meta ref="model.ModeleIA:4301" class="common.Patient" method="getSmoke" argTypes=""></meta>
+model.ModeleIA<--common.Patient:smoke : String<meta ref="common.Patient:1958"></meta>
+model.ModeleIA->common.Patient:getScc()<meta ref="model.ModeleIA:4447" class="common.Patient" method="getScc" argTypes=""></meta>
+model.ModeleIA<--common.Patient:scc : String<meta ref="common.Patient:2074"></meta>
+model.ModeleIA<--model.ModeleIA:features : float[]<meta ref="model.ModeleIA:4961"></meta>
+model.ModeleIA->ml.dmlc.xgboost4j.java.Booster:predict(patientMatrix, true)<meta ref="model.ModeleIA:17364" class="ml.dmlc.xgboost4j.java.Booster" method="predict" argTypes="ml.dmlc.xgboost4j.java.DMatrix,boolean"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.Booster:float[][]
+alt predProbs.length == 0 || predProbs[0].length == 0
+server.ServeurService<--model.ModeleIA:"Erreur: Prédiction invalide." : String<meta ref="model.ModeleIA:17493"></meta>
+end
+model.ModeleIA->ml.dmlc.xgboost4j.java.Booster:predict(patientMatrix)<meta ref="model.ModeleIA:17877" class="ml.dmlc.xgboost4j.java.Booster" method="predict" argTypes="ml.dmlc.xgboost4j.java.DMatrix"></meta>
+model.ModeleIA<--ml.dmlc.xgboost4j.java.Booster:float[][]
+model.ModeleIA->model.ModeleIA:mapFloatToObesityLevel(predictions[0][0])<meta ref="model.ModeleIA:17997" class="model.ModeleIA" method="mapFloatToObesityLevel" argTypes="float"></meta>
+alt index >= 0 && index < OBESITY_LEVELS.length
+model.ModeleIA<--model.ModeleIA:OBESITY_LEVELS[index] : String<meta ref="model.ModeleIA:2182"></meta>
+end
+model.ModeleIA<--model.ModeleIA:"Normal_Weight" : String<meta ref="model.ModeleIA:2230"></meta>
+server.ServeurService<--model.ModeleIA:predictedLevel : String<meta ref="model.ModeleIA:18389"></meta>
+client.ClientService->common.Patient:getGender()<meta ref="client.ClientService:5043" class="common.Patient" method="getGender" argTypes=""></meta>
+client.ClientService<--common.Patient:gender : String<meta ref="common.Patient:1346"></meta>
+client.ClientService->common.Patient:getAge()<meta ref="client.ClientService:5065" class="common.Patient" method="getAge" argTypes=""></meta>
+client.ClientService<--common.Patient:age : int<meta ref="common.Patient:1402"></meta>
+client.ClientService->common.Patient:getHeight()<meta ref="client.ClientService:5084" class="common.Patient" method="getHeight" argTypes=""></meta>
+client.ClientService<--common.Patient:height : double<meta ref="common.Patient:1461"></meta>
+client.ClientService->common.Patient:getWeight()<meta ref="client.ClientService:5106" class="common.Patient" method="getWeight" argTypes=""></meta>
+client.ClientService<--common.Patient:weight : double<meta ref="common.Patient:1523"></meta>
+end
+end

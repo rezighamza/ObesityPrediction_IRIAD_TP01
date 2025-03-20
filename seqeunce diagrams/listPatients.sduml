@@ -1,0 +1,49 @@
+participant "ClientService<meta class="client.ClientService"></meta>" as client.ClientService
+participant "ServeurService (InterfaceRMI)<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "ServeurService<meta class="server.ServeurService"></meta>" as server.ServeurService
+participant "Patient<meta class="common.Patient"></meta>" as common.Patient
+
+autoactivation
+autonumber
+messagestyle <wordwrap:50>
+
+client.ClientService->server.ServeurService:listPatients(clientID)<meta ref="client.ClientService:6905" class="server.ServeurService" method="listPatients" argTypes="java.lang.String"></meta>
+loop for each String key
+alt key.startsWith(clientID + "_")
+server.ServeurService->common.Patient:getGender()<meta ref="server.ServeurService:4443" class="common.Patient" method="getGender" argTypes=""></meta>
+server.ServeurService<--common.Patient:gender : String<meta ref="common.Patient:1346"></meta>
+server.ServeurService->common.Patient:getAge()<meta ref="server.ServeurService:4519" class="common.Patient" method="getAge" argTypes=""></meta>
+server.ServeurService<--common.Patient:age : int<meta ref="common.Patient:1402"></meta>
+server.ServeurService->common.Patient:getHeight()<meta ref="server.ServeurService:4595" class="common.Patient" method="getHeight" argTypes=""></meta>
+server.ServeurService<--common.Patient:height : double<meta ref="common.Patient:1461"></meta>
+server.ServeurService->common.Patient:getWeight()<meta ref="server.ServeurService:4674" class="common.Patient" method="getWeight" argTypes=""></meta>
+server.ServeurService<--common.Patient:weight : double<meta ref="common.Patient:1523"></meta>
+server.ServeurService->common.Patient:getFamilyHistory()<meta ref="server.ServeurService:4761" class="common.Patient" method="getFamilyHistory" argTypes=""></meta>
+server.ServeurService<--common.Patient:familyHistory : String<meta ref="common.Patient:1666"></meta>
+server.ServeurService->common.Patient:getFavc()<meta ref="server.ServeurService:4845" class="common.Patient" method="getFavc" argTypes=""></meta>
+server.ServeurService<--common.Patient:favc : String<meta ref="common.Patient:1733"></meta>
+server.ServeurService->common.Patient:getFcvc()<meta ref="server.ServeurService:4920" class="common.Patient" method="getFcvc" argTypes=""></meta>
+server.ServeurService<--common.Patient:fcvc : int<meta ref="common.Patient:1788"></meta>
+server.ServeurService->common.Patient:getNcp()<meta ref="server.ServeurService:4994" class="common.Patient" method="getNcp" argTypes=""></meta>
+server.ServeurService<--common.Patient:ncp : int<meta ref="common.Patient:1842"></meta>
+server.ServeurService->common.Patient:getCaec()<meta ref="server.ServeurService:5068" class="common.Patient" method="getCaec" argTypes=""></meta>
+server.ServeurService<--common.Patient:caec : String<meta ref="common.Patient:1899"></meta>
+server.ServeurService->common.Patient:getSmoke()<meta ref="server.ServeurService:5144" class="common.Patient" method="getSmoke" argTypes=""></meta>
+server.ServeurService<--common.Patient:smoke : String<meta ref="common.Patient:1958"></meta>
+server.ServeurService->common.Patient:getCh2o()<meta ref="server.ServeurService:5220" class="common.Patient" method="getCh2o" argTypes=""></meta>
+server.ServeurService<--common.Patient:ch2o : double<meta ref="common.Patient:2017"></meta>
+server.ServeurService->common.Patient:getScc()<meta ref="server.ServeurService:5294" class="common.Patient" method="getScc" argTypes=""></meta>
+server.ServeurService<--common.Patient:scc : String<meta ref="common.Patient:2074"></meta>
+server.ServeurService->common.Patient:getFaf()<meta ref="server.ServeurService:5367" class="common.Patient" method="getFaf" argTypes=""></meta>
+server.ServeurService<--common.Patient:faf : int<meta ref="common.Patient:2127"></meta>
+server.ServeurService->common.Patient:getTue()<meta ref="server.ServeurService:5440" class="common.Patient" method="getTue" argTypes=""></meta>
+server.ServeurService<--common.Patient:tue : int<meta ref="common.Patient:2180"></meta>
+server.ServeurService->common.Patient:getCalc()<meta ref="server.ServeurService:5514" class="common.Patient" method="getCalc" argTypes=""></meta>
+server.ServeurService<--common.Patient:calc : String<meta ref="common.Patient:2237"></meta>
+server.ServeurService->common.Patient:getMtrans()<meta ref="server.ServeurService:5591" class="common.Patient" method="getMtrans" argTypes=""></meta>
+server.ServeurService<--common.Patient:mtrans : String<meta ref="common.Patient:2297"></meta>
+server.ServeurService->common.Patient:getObesityLevel()<meta ref="server.ServeurService:5677" class="common.Patient" method="getObesityLevel" argTypes=""></meta>
+server.ServeurService<--common.Patient:obesityLevel : String<meta ref="common.Patient:1591"></meta>
+end
+end
+client.ClientService<--server.ServeurService:list : List<String><meta ref="server.ServeurService:5793"></meta>

@@ -1,0 +1,13 @@
+participant "ClientService<meta class="client.ClientService"></meta>" as client.ClientService
+participant "ServeurService (InterfaceRMI)<meta class="server.ServeurService"></meta>" as server.ServeurService
+
+autoactivation
+autonumber
+messagestyle <wordwrap:50>
+
+client.ClientService->server.ServeurService:deletePatient(clientID, num)<meta ref="client.ClientService:6031" class="server.ServeurService" method="deletePatient" argTypes="java.lang.String,int"></meta>
+alt patientMap.containsKey(key)
+client.ClientService<--server.ServeurService:"Patient " + key + " supprimé." : String<meta ref="server.ServeurService:3473"></meta>
+else
+client.ClientService<--server.ServeurService:"Aucun patient trouvé avec l'ID: " + key : String<meta ref="server.ServeurService:3542"></meta>
+end
