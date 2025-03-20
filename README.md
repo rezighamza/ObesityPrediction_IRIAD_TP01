@@ -69,12 +69,16 @@ Each patient record is validated to ensure all attributes are provided and corre
 * Each patient is uniquely identified using the `clientID_count` format to avoid conflicts between multiple clients.
 
 #### Outlier Detection (Post-Collection):
+First thing 
 Once **≥ 2111 patient records** are gathered, the server performs a final cleaning step:
 * **Height Check**: Discard entries where height < **1.2 meters** or height > **2.2 meters**.
 * **Weight Check**: Discard entries where weight < **30 kg** or weight > **200 kg**.
 * **Age Check**: Discard entries where age < **10** or age > **100**.
 * **BMI Check**: Remove entries where BMI < **10** or BMI > **60** to eliminate anomalies.
-
+##### Model Check:
+* Upon client request, the server first checks if a previously saved model (model.bin) exists.
+* If a model exists: Prediction requests can be processed immediately.
+* If no model exists: Prediction requests are denied until the model is trained.
 ## Training Phase:
 After preprocessing and cleaning:
 * The server triggers model training using the **XGBoost** algorithm.
